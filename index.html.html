@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ระบบรายงานประจำวัน รปภ. / Security Daily Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f8;--card:#ffffff;--text:#1a2333;--muted:#697386;--border:#dfe3ea;--accent:#1f3864;--accent2:#2f5aa8;--danger:#c0392b;--ok:#1e8a4c;--warn:#c9962c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151d;--card:#1a212c;--text:#e7ebf3;--muted:#9aa4b5;--border:#2b3242;--accent:#8fb0e6;--accent2:#5c86c9;}}
+:root[data-theme="dark"]{--bg:#11151d;--card:#1a212c;--text:#e7ebf3;--muted:#9aa4b5;--border:#2b3242;--accent:#8fb0e6;--accent2:#5c86c9;}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Sarabun','Noto Sans Thai',sans-serif;font-size:15px}
+header{position:sticky;top:0;z-index:5;background:var(--accent);color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+header h1{margin:0;font-size:18px}
+header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
+#langBtn{flex:0 0 auto;padding:7px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.5);background:transparent;color:#fff;font-family:inherit;font-size:13px;cursor:pointer}
+.general{display:flex;flex-wrap:wrap;gap:8px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--border)}
+.general label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px;flex:1;min-width:140px}
+.general input{padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:inherit}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch}
+.tab-btn{flex:0 0 auto;padding:8px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:13.5px;white-space:nowrap;cursor:pointer}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+main{padding:12px;max-width:1100px;margin:0 auto}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:15.5px;color:var(--accent2)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.field input,.field select{width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:inherit;font-size:14px}
+.btn{margin-top:10px;padding:9px 16px;border:none;border-radius:6px;background:var(--accent2);color:#fff;font-family:inherit;font-size:14px;cursor:pointer}
+.btn.danger{background:var(--danger)}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.thumb{position:relative}
+.thumb img{width:44px;height:44px;object-fit:cover;border-radius:5px;border:1px solid var(--border)}
+.thumb button{position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:10px;line-height:16px;padding:0;cursor:pointer}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--bg);color:var(--muted);font-weight:600;white-space:nowrap}
+td .thumbs img{width:34px;height:34px}
+.empty-row td{text-align:center;color:var(--muted);padding:14px}
+.status-ok{color:var(--ok);font-weight:600}
+.status-bad{color:var(--danger);font-weight:600}
+.status-warn{color:var(--warn);font-weight:600}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.stat .n{font-size:22px;font-weight:700;color:var(--accent2)}
+.stat .l{font-size:12.5px;color:var(--muted)}
+.doc h2{color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:6px;margin-top:24px;font-size:16px}
+.doc .phead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:14px}
+@media print{
+ header,.tabs,.general,.no-print{display:none!important}
+ main{padding:0;max-width:none}
+ .tab-content{display:none!important}
+ .tab-content.active{display:block!important}
+ .card{border:none;padding:0}
+ td .thumbs img{width:60px;height:60px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div><h1 id="h-title">🛡️ ระบบรายงานประจำวัน ฝ่ายรักษาความปลอดภัย</h1><p id="h-sub">บันทึกข้อมูลพร้อมรูปภาพ แล้วดูตัวอย่างก่อนพิมพ์เป็น PDF</p></div>
+ <button id="langBtn" onclick="toggleLang()">EN</button>
+</header>
+<div class="general">
+ <label><span id="l-site"></span><input id="g-site"></label>
+ <label><span id="l-date"></span><input id="g-date" type="date"></label>
+ <label><span id="l-prep"></span><input id="g-preparer"></label>
+</div>
+<div class="general" id="backupBar">
+ <span id="l-backup" style="font-size:12px;color:var(--muted);align-self:center"></span>
+ <button class="btn ghost" style="margin:0" id="exportBtn" onclick="exportData()"></button>
+ <label class="btn ghost" style="margin:0;display:inline-flex;align-items:center;cursor:pointer" id="importLbl">
+  <span id="importTxt"></span>
+  <input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)">
+ </label>
+</div>
+<div class="tabs" id="tabs"></div>
+<main id="main"></main>
+<script>
+const SHIFT_OPTS=[{v:'night',th:'กะ 19:00-07:00',en:'Night shift 19:00-07:00'},{v:'day',th:'กะ 07:00-19:00',en:'Day shift 07:00-19:00'}];
+const STATUS_OPTS=[{v:'normal',th:'ปกติ',en:'Normal'},{v:'abnormal',th:'ผิดปกติ',en:'Abnormal'},{v:'fixed',th:'ซ่อมแล้ว',en:'Fixed'},{v:'pending',th:'รอซ่อม',en:'Pending repair'}];
+const MP_STATUS=[{v:'present',th:'มาปฏิบัติงาน',en:'Present'},{v:'absent',th:'ขาด',en:'Absent'},{v:'sick',th:'ลาป่วย',en:'Sick leave'},{v:'personal',th:'ลากิจ',en:'Personal leave'},{v:'late',th:'มาสาย',en:'Late'}];
+const POST_OPTS=[{v:'entrance',th:'ทางเข้าพนักงาน',en:'Employee entrance'},{v:'firecommand',th:'Fire Command',en:'Fire Command Room (FCC)'}];
+const VIS_TYPE=[{v:'visitor',th:'Visitor',en:'Visitor'},{v:'technician',th:'ช่าง',en:'Technician'},{v:'contractor',th:'ผู้รับเหมา',en:'Contractor'},{v:'other',th:'อื่นๆ',en:'Other'}];
+const INC_TYPE=[{v:'fire',th:'Fire Alarm ขัดข้อง',en:'Fire alarm issue'},{v:'cctv',th:'CCTV ขัดข้อง',en:'CCTV issue'},{v:'equipment',th:'อุปกรณ์ขัดข้อง',en:'Equipment issue'},{v:'suspicious',th:'บุคคลต้องสงสัย',en:'Suspicious person'},{v:'lost',th:'ทรัพย์สินสูญหาย',en:'Lost property'},{v:'accident',th:'อุบัติเหตุ',en:'Accident'},{v:'other',th:'อื่นๆ',en:'Other'}];
+const INC_STATUS=[{v:'open',th:'เปิด',en:'Open'},{v:'following',th:'ติดตาม',en:'Following up'},{v:'closed',th:'ปิดเคส',en:'Closed'}];
+const FIRE_ITEMS=[{v:'panel',th:'ตู้ Fire Alarm',en:'Fire alarm panel/cabinet'},{v:'computer',th:'ระบบคอมพิวเตอร์ Fire Alarm',en:'Fire alarm computer system'},{v:'monitor',th:'จอมอนิเตอร์',en:'Monitor screen'}];
+const CCTV_ITEMS=[{v:'computer',th:'ระบบคอมพิวเตอร์ CCTV',en:'CCTV computer system'},{v:'tv',th:'จอ TV',en:'TV monitor'},{v:'brokencam',th:'กล้อง CCTV เสีย/ใช้งานไม่ได้',en:'Broken/non-functional camera'}];
+const DOOR_ITEMS=[{v:'computer',th:'ระบบคอมพิวเตอร์ควบคุมประตู',en:'Door access control computer system'}];
+const LIFT_ITEMS=[{v:'computer',th:'ระบบคอมพิวเตอร์ควบคุมลิฟต์',en:'Lift control computer system'},{v:'phone',th:'โทรศัพท์ฉุกเฉินในลิฟต์',en:'Emergency intercom/telephone'}];
+
+const T=(o,l)=>o[l||LANG];
+let LANG='th';
+
+const MODULES=[
+{id:'manpower',icon:'👮',title:{th:'กำลังพล',en:'Manpower'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'name',label:{th:'ชื่อ-สกุล',en:'Full name'},type:'text'},
+ {key:'position',label:{th:'ตำแหน่ง',en:'Position'},type:'text'},
+ {key:'point',label:{th:'จุดประจำจุด',en:'Post / location'},type:'select',options:POST_OPTS},
+ {key:'timeIn',label:{th:'เวลาเข้าเวร',en:'Time in'},type:'time'},
+ {key:'timeOut',label:{th:'เวลาออกเวร',en:'Time out'},type:'time'},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:MP_STATUS},
+ {key:'note',label:{th:'หมายเหตุ',en:'Note'},type:'text'}]},
+{id:'firealarm',icon:'🔥',title:{th:'ระบบ Fire Alarm',en:'Fire Alarm System'},photoRequired:true,fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลาตรวจ',en:'Check time'},type:'time'},
+ {key:'item',label:{th:'รายการตรวจสอบ',en:'Checklist item'},type:'select',options:FIRE_ITEMS},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:STATUS_OPTS},
+ {key:'detail',label:{th:'รายละเอียด/ปัญหา',en:'Details / issue'},type:'text'},
+ {key:'inspector',label:{th:'ผู้ตรวจ',en:'Inspector'},type:'text'}]},
+{id:'cctv',icon:'📹',title:{th:'ระบบ CCTV',en:'CCTV System'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลาตรวจ',en:'Check time'},type:'time'},
+ {key:'item',label:{th:'รายการตรวจสอบ',en:'Checklist item'},type:'select',options:CCTV_ITEMS},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:STATUS_OPTS},
+ {key:'detail',label:{th:'รายละเอียด/ปัญหา',en:'Details / issue'},type:'text'},
+ {key:'inspector',label:{th:'ผู้ตรวจ',en:'Inspector'},type:'text'}]},
+{id:'door',icon:'🚪',title:{th:'ระบบประตู',en:'Door System'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลาตรวจ',en:'Check time'},type:'time'},
+ {key:'item',label:{th:'รายการตรวจสอบ',en:'Checklist item'},type:'select',options:DOOR_ITEMS},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:STATUS_OPTS},
+ {key:'detail',label:{th:'รายละเอียด/ปัญหา',en:'Details / issue'},type:'text'},
+ {key:'inspector',label:{th:'ผู้ตรวจ',en:'Inspector'},type:'text'}]},
+{id:'lift',icon:'🛗',title:{th:'ระบบลิฟต์',en:'Lift System'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลาตรวจ',en:'Check time'},type:'time'},
+ {key:'liftNo',label:{th:'ลิฟต์หมายเลข',en:'Lift number'},type:'text'},
+ {key:'item',label:{th:'รายการตรวจสอบ',en:'Checklist item'},type:'select',options:LIFT_ITEMS},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:STATUS_OPTS},
+ {key:'detail',label:{th:'รายละเอียด/ปัญหา',en:'Details / issue'},type:'text'},
+ {key:'inspector',label:{th:'ผู้ตรวจ',en:'Inspector'},type:'text'}]},
+{id:'patrol',icon:'🚶',title:{th:'เดินตรวจตรา',en:'Patrol Log'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลา',en:'Time'},type:'time'},
+ {key:'route',label:{th:'เส้นทาง/จุดตรวจ',en:'Route / checkpoint'},type:'text'},
+ {key:'finding',label:{th:'ผลการตรวจ/สิ่งที่พบ',en:'Findings'},type:'text'},
+ {key:'inspector',label:{th:'ผู้ตรวจ',en:'Inspector'},type:'text'}]},
+{id:'visitor',icon:'🧑‍💼',title:{th:'ผู้มาติดต่อ',en:'Visitors'},fields:[
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'timeIn',label:{th:'เวลาเข้า',en:'Time in'},type:'time'},
+ {key:'timeOut',label:{th:'เวลาออก',en:'Time out'},type:'time'},
+ {key:'name',label:{th:'ชื่อผู้มาติดต่อ',en:'Visitor name'},type:'text'},
+ {key:'type',label:{th:'ประเภท',en:'Type'},type:'select',options:VIS_TYPE},
+ {key:'company',label:{th:'บริษัท/หน่วยงาน',en:'Company / org.'},type:'text'},
+ {key:'purpose',label:{th:'วัตถุประสงค์',en:'Purpose'},type:'text'},
+ {key:'cardNo',label:{th:'บัตรผ่าน (เลขที่)',en:'Pass card no.'},type:'text'},
+ {key:'approver',label:{th:'ผู้อนุญาต/รปภ.',en:'Approved by'},type:'text'}]},
+{id:'incident',icon:'🚨',title:{th:'Incident Report',en:'Incident Report'},fields:[
+ {key:'caseNo',label:{th:'เลขที่เคส',en:'Case No.'},type:'text'},
+ {key:'shift',label:{th:'กะ',en:'Shift'},type:'select',options:SHIFT_OPTS},
+ {key:'time',label:{th:'เวลาเกิดเหตุ',en:'Time of incident'},type:'time'},
+ {key:'location',label:{th:'สถานที่เกิดเหตุ',en:'Location'},type:'text'},
+ {key:'type',label:{th:'ประเภทเหตุการณ์',en:'Incident type'},type:'select',options:INC_TYPE},
+ {key:'detail',label:{th:'รายละเอียดเหตุการณ์',en:'Incident details'},type:'text'},
+ {key:'action',label:{th:'การดำเนินการ',en:'Action taken'},type:'text'},
+ {key:'reporter',label:{th:'ผู้รายงาน',en:'Reported by'},type:'text'},
+ {key:'status',label:{th:'สถานะ',en:'Status'},type:'select',options:INC_STATUS}]}
+];
+const UI={
+ th:{title:'🛡️ ระบบรายงานประจำวัน ฝ่ายรักษาความปลอดภัย',sub:'บันทึกข้อมูลพร้อมรูปภาพ แล้วดูตัวอย่างก่อนพิมพ์เป็น PDF',site:'สถานที่/อาคาร',date:'วันที่ปฏิบัติงาน',prep:'ผู้จัดทำรายงาน',
+  add:'เพิ่มรายการใหม่',addBtn:'＋ เพิ่มรายการ',photo:'แนบรูปภาพ',photoReq:'แนบรูปภาพ (บังคับ)',saved:'รายการที่บันทึกแล้ว',photoCol:'รูปภาพ',del:'ลบ',none:'ยังไม่มีข้อมูล',
+  summaryTab:'📊 สรุปรวม',previewTab:'🖨️ ตัวอย่างก่อนพิมพ์',printBtn:'🖨️ พิมพ์ / บันทึกเป็น PDF',resetBtn:'ล้างข้อมูลทั้งหมด',resetQ:'ล้างข้อมูลทั้งหมดในรายงานนี้?',
+  need:'กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง หรือแนบรูปภาพ',needPhoto:'รายการนี้บังคับแนบรูปภาพทุกครั้ง กรุณาถ่ายรูปแนบก่อนบันทึก',entries:'รายการ',previewTitle:'ตัวอย่างเอกสารก่อนพิมพ์',summaryTitle:'สรุปสถิติประจำวัน',
+  backupTitle:'สำรอง/กู้คืนข้อมูล',exportBtn:'💾 บันทึกไฟล์สำรอง',importBtn:'📂 โหลดไฟล์สำรอง',saveUnavailable:'ฟีเจอร์บันทึกไฟล์ยังไม่พร้อมใช้งานในมุมมองนี้',saveFailed:'บันทึกไฟล์ไม่สำเร็จ ลองใหม่อีกครั้ง',loadSuccess:'โหลดข้อมูลสำเร็จ',loadInvalid:'ไฟล์ไม่ถูกต้องหรือเสียหาย',
+  fireChecklistTitle:'✅ สถานะตรวจเช็คก่อนจบกะ (ต้องครบทุกรายการ)'},
+ en:{title:'🛡️ Security Daily Report System',sub:'Log entries with photos, preview, then print/save as one PDF',site:'Site / Building',date:'Report date',prep:'Prepared by',
+  add:'Add new entry',addBtn:'＋ Add entry',photo:'Attach photos',photoReq:'Attach photos (required)',saved:'Saved entries',photoCol:'Photos',del:'Delete',none:'No data yet',
+  summaryTab:'📊 Summary',previewTab:'🖨️ Print Preview',printBtn:'🖨️ Print / Save as PDF',resetBtn:'Clear all data',resetQ:'Clear all data in this report?',
+  need:'Please fill in at least one field or attach a photo',needPhoto:'This checklist item requires a photo every time — please attach one before saving',entries:'entries',previewTitle:'Print Preview',summaryTitle:'Daily Summary Dashboard',
+  backupTitle:'Backup / restore data',exportBtn:'💾 Save backup file',importBtn:'📂 Load backup file',saveUnavailable:'File saving is not available in this view',saveFailed:'Failed to save file — please try again',loadSuccess:'Data loaded successfully',loadInvalid:'Invalid or corrupted file',
+  fireChecklistTitle:'✅ Pre-shift-end checklist status (all items required)'}
+};
+const STORE_KEY='secreport_v2';
+let state=null,pending={},downloadsCap=null;
+MODULES.forEach(m=>pending[m.id]=[]);
+(async()=>{
+ try{ if(window.claude&&window.claude.use){downloadsCap=await window.claude.use('downloads');} }catch(e){}
+})();
+
+function loadState(){
+ try{const raw=localStorage.getItem(STORE_KEY);if(raw)return JSON.parse(raw);}catch(e){}
+ const data={};MODULES.forEach(m=>data[m.id]=[]);
+ return{general:{site:'',date:'',preparer:''},data:data};
+}
+function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+function optLabel(field,val,l){const o=(field.options||[]).find(x=>x.v===val);return o?T(o,l):(val||'-');}
+function statusClass(val){
+ if(['normal','present','fixed','closed'].includes(val))return'status-ok';
+ if(['abnormal','absent','open'].includes(val))return'status-bad';
+ if(val)return'status-warn';return'';
+}
+function toggleLang(){LANG=LANG==='th'?'en':'th';document.getElementById('langBtn').textContent=LANG==='th'?'EN':'TH';rebuildAll();}
+
+function buildTabs(){
+ const u=UI[LANG];
+ let html='';
+ MODULES.forEach((m,i)=>html+=`<button class="tab-btn${i===0?' active':''}" data-tab="${m.id}" onclick="showTab('${m.id}')">${m.icon} ${T(m.title)}</button>`);
+ html+=`<button class="tab-btn" data-tab="summary" onclick="showTab('summary')">${u.summaryTab}</button>`;
+ html+=`<button class="tab-btn" data-tab="preview" onclick="showTab('preview')">${u.previewTab}</button>`;
+ document.getElementById('tabs').innerHTML=html;
+}
+function showTab(id){
+ document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+ document.querySelectorAll('.tab-btn').forEach(el=>el.classList.toggle('active',el.dataset.tab===id));
+ document.getElementById('tc-'+id).classList.add('active');
+ if(id==='summary')renderSummary();
+ if(id==='preview')renderPreview();
+}
+function buildMain(){
+ const u=UI[LANG];
+ let html='';
+ MODULES.forEach((m,i)=>{
+  html+=`<div class="tab-content${i===0?' active':''}" id="tc-${m.id}">`;
+  html+=`<div class="card"><h3>${m.icon} ${T(m.title)} — ${u.add}</h3><div class="form-grid">`;
+  m.fields.forEach(f=>{
+   html+=`<div class="field"><label>${T(f.label)}</label>`;
+   if(f.type==='select'){
+    html+=`<select id="${m.id}-${f.key}">`+f.options.map(o=>`<option value="${o.v}">${T(o)}</option>`).join('')+`</select>`;
+   }else{
+    html+=`<input type="${f.type}" id="${m.id}-${f.key}">`;
+   }
+   html+=`</div>`;
+  });
+  html+=`<div class="field"><label>${m.photoRequired?u.photoReq:u.photo}</label><input type="file" accept="image/*" multiple onchange="handlePhotos('${m.id}',this)"></div>`;
+  html+=`</div><div class="thumbs" id="pending-${m.id}"></div>`;
+  html+=`<button class="btn" onclick="addEntry('${m.id}')">${u.addBtn}</button></div>`;
+  if(m.id==='firealarm'){
+   html+=`<div class="card"><h3>${u.fireChecklistTitle}</h3><div id="fireChecklist"></div></div>`;
+  }
+  html+=`<div class="card"><h3>${u.saved} (<span id="count-${m.id}">0</span>)</h3><div class="tbl-wrap"><table id="table-${m.id}"></table></div></div>`;
+  html+=`</div>`;
+ });
+ html+=`<div class="tab-content" id="tc-summary"><div class="card"><h3>${u.summaryTitle}</h3><div class="stats-grid" id="statsGrid"></div></div></div>`;
+ html+=`<div class="tab-content" id="tc-preview"><div class="bar no-print">
+  <button class="btn" onclick="window.print()">${u.printBtn}</button>
+  <button class="btn ghost" onclick="if(confirm(UI[LANG].resetQ))resetAll()">${u.resetBtn}</button>
+  </div><div class="card doc" id="previewDoc"></div></div>`;
+ document.getElementById('main').innerHTML=html;
+}
+
+function handlePhotos(mid,input){
+ const files=Array.from(input.files||[]);
+ files.forEach(f=>{
+  const r=new FileReader();
+  r.onload=e=>{pending[mid].push(e.target.result);renderPending(mid);};
+  r.readAsDataURL(f);
+ });
+ input.value='';
+}
+function renderPending(mid){
+ document.getElementById('pending-'+mid).innerHTML=pending[mid].map((src,i)=>`<div class="thumb"><img src="${src}"><button onclick="pending['${mid}'].splice(${i},1);renderPending('${mid}')">✕</button></div>`).join('');
+}
+function addEntry(mid){
+ const m=MODULES.find(x=>x.id===mid),obj={};let hasValue=false;
+ m.fields.forEach(f=>{const el=document.getElementById(`${mid}-${f.key}`);obj[f.key]=el.value;if(el.value)hasValue=true;});
+ if(m.photoRequired&&pending[mid].length===0){alert(UI[LANG].needPhoto);return;}
+ if(!hasValue&&pending[mid].length===0){alert(UI[LANG].need);return;}
+ obj.photos=pending[mid].slice();
+ state.data[mid].push(obj);
+ m.fields.forEach(f=>{const el=document.getElementById(`${mid}-${f.key}`);if(f.type!=='select')el.value='';});
+ pending[mid]=[];renderPending(mid);renderTable(mid);saveState();
+}
+function deleteEntry(mid,idx){state.data[mid].splice(idx,1);renderTable(mid);saveState();}
+function renderTable(mid){
+ const m=MODULES.find(x=>x.id===mid),rows=state.data[mid],u=UI[LANG];
+ document.getElementById('count-'+mid).textContent=rows.length;
+ const tbl=document.getElementById('table-'+mid);
+ let html='<tr>'+m.fields.map(f=>`<th>${T(f.label)}</th>`).join('')+`<th>${u.photoCol}</th><th></th></tr>`;
+ if(!rows.length){html+=`<tr class="empty-row"><td colspan="${m.fields.length+2}">${u.none}</td></tr>`;}
+ else{rows.forEach((r,i)=>{
+  html+='<tr>'+m.fields.map(f=>{
+   const val=f.type==='select'?optLabel(f,r[f.key]):(r[f.key]||'-');
+   const cls=f.key==='status'?statusClass(r[f.key]):'';
+   return `<td class="${cls}">${val}</td>`;
+  }).join('');
+  html+=`<td><div class="thumbs">${(r.photos||[]).map(p=>`<img src="${p}">`).join('')||'-'}</div></td>`;
+  html+=`<td><button class="btn danger" style="margin:0;padding:4px 8px;font-size:12px" onclick="deleteEntry('${mid}',${i})">${u.del}</button></td></tr>`;
+ });}
+ tbl.innerHTML=html;
+ if(mid==='firealarm')renderFireChecklist();
+}
+function renderAllTables(){MODULES.forEach(m=>renderTable(m.id));}
+function renderFireChecklist(){
+ const box=document.getElementById('fireChecklist');
+ if(!box)return;
+ const rows=state.data.firealarm;
+ let html='';
+ SHIFT_OPTS.forEach(sh=>{
+  html+=`<div style="margin-bottom:8px"><b>${T(sh)}</b><br>`;
+  html+=FIRE_ITEMS.map(it=>{
+   const done=rows.some(r=>r.shift===sh.v&&r.item===it.v);
+   return `<span style="display:inline-block;margin:3px 10px 0 0">${done?'✅':'❌'} ${T(it)}</span>`;
+  }).join('');
+  html+='</div>';
+ });
+ box.innerHTML=html;
+}
+
+function computeStats(l){
+ l=l||LANG;
+ const s=[];
+ const mpNight=state.data.manpower.filter(r=>r.shift==='night'&&r.status==='present').length;
+ const mpDay=state.data.manpower.filter(r=>r.shift==='day'&&r.status==='present').length;
+ const mpOff=state.data.manpower.filter(r=>['absent','sick','personal'].includes(r.status)).length;
+ s.push([mpNight,l==='th'?'รปภ.ปฏิบัติงาน กะกลางคืน':'Staff on duty — night shift']);
+ s.push([mpDay,l==='th'?'รปภ.ปฏิบัติงาน กะกลางวัน':'Staff on duty — day shift']);
+ s.push([mpOff,l==='th'?'ขาด/ลา รวม':'Absent / on leave (total)']);
+ [['firealarm','Fire Alarm'],['cctv','CCTV'],['door',l==='th'?'ประตู':'Doors'],['lift',l==='th'?'ลิฟต์':'Lifts']].forEach(([id,label])=>{
+  const rows=state.data[id];
+  const abn=rows.filter(r=>r.status==='abnormal'||r.status==='pending').length;
+  s.push([rows.length,(l==='th'?'รอบตรวจ ':'Checks — ')+label]);
+  s.push([abn,(l==='th'?'พบผิดปกติ/รอซ่อม ':'Abnormal/pending — ')+label]);
+ });
+ s.push([state.data.patrol.length,l==='th'?'รอบเดินตรวจทั้งหมด':'Total patrol rounds']);
+ s.push([state.data.visitor.length,l==='th'?'ผู้มาติดต่อทั้งหมด':'Total visitors']);
+ s.push([state.data.incident.length,l==='th'?'Incident ทั้งหมด':'Total incidents']);
+ s.push([state.data.incident.filter(r=>r.status==='open'||r.status==='following').length,l==='th'?'Incident ยังไม่ปิดเคส':'Incidents still open']);
+ return s;
+}
+function renderSummary(){
+ const grid=document.getElementById('statsGrid');
+ grid.innerHTML=computeStats(LANG).map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+}
+function renderPreview(){
+ const g=state.general,u=UI.en,pl='en';
+ let html=`<h3 style="margin-top:0">${u.previewTitle}</h3><div class="phead"><b>${u.site}:</b> ${g.site||'-'} &nbsp; <b>${u.date}:</b> ${g.date||'-'} &nbsp; <b>${u.prep}:</b> ${g.preparer||'-'}</div>`;
+ html+=`<h2>${u.summaryTitle}</h2><div class="stats-grid">`+computeStats(pl).map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')+`</div>`;
+ MODULES.forEach(m=>{
+  const rows=state.data[m.id];
+  html+=`<h2>${m.icon} ${T(m.title,pl)} (${rows.length} ${u.entries})</h2>`;
+  if(!rows.length){html+=`<p style="color:var(--muted)">${u.none}</p>`;return;}
+  html+='<table><tr>'+m.fields.map(f=>`<th>${T(f.label,pl)}</th>`).join('')+`<th>${u.photoCol}</th></tr>`;
+  rows.forEach(r=>{
+   html+='<tr>'+m.fields.map(f=>`<td>${f.type==='select'?optLabel(f,r[f.key],pl):(r[f.key]||'-')}</td>`).join('');
+   html+=`<td><div class="thumbs">${(r.photos||[]).map(p=>`<img src="${p}">`).join('')||'-'}</div></td></tr>`;
+  });
+  html+='</table>';
+ });
+ document.getElementById('previewDoc').innerHTML=html;
+}
+function resetAll(){
+ const data={};MODULES.forEach(m=>data[m.id]=[]);state.data=data;saveState();renderAllTables();renderSummary();renderPreview();
+}
+async function exportData(){
+ const u=UI[LANG];
+ const filename=`security-report-${state.general.date||'report'}.json`;
+ if(!downloadsCap){alert(u.saveUnavailable);return;}
+ try{ await downloadsCap.save({filename,data:JSON.stringify(state,null,2)}); }
+ catch(e){ if(!e||e.code!=='declined')alert(u.saveFailed); }
+}
+function importData(input){
+ const u=UI[LANG];
+ const file=input.files&&input.files[0];
+ if(!file)return;
+ const r=new FileReader();
+ r.onload=e=>{
+  try{
+   const obj=JSON.parse(e.target.result);
+   if(obj&&obj.data&&obj.general){state=obj;saveState();rebuildAll();alert(u.loadSuccess);}
+   else alert(u.loadInvalid);
+  }catch(err){alert(u.loadInvalid);}
+ };
+ r.readAsText(file);
+ input.value='';
+}
+function bindGeneral(){
+ const u=UI[LANG];
+ document.getElementById('h-title').textContent=u.title;
+ document.getElementById('h-sub').textContent=u.sub;
+ document.getElementById('l-site').textContent=u.site;
+ document.getElementById('l-date').textContent=u.date;
+ document.getElementById('l-prep').textContent=u.prep;
+ document.getElementById('l-backup').textContent=u.backupTitle+':';
+ document.getElementById('exportBtn').textContent=u.exportBtn;
+ document.getElementById('importTxt').textContent=u.importBtn;
+ ['site','date','preparer'].forEach(k=>{
+  const id=k==='preparer'?'g-preparer':'g-'+k;
+  const el=document.getElementById(id);
+  el.value=state.general[k]||'';
+  el.oninput=()=>{state.general[k]=el.value;saveState();};
+ });
+}
+function rebuildAll(){
+ buildTabs();buildMain();bindGeneral();renderAllTables();renderSummary();renderPreview();
+ const first=MODULES[0].id;showTab(document.querySelector('.tab-btn.active')?document.querySelector('.tab-btn.active').dataset.tab:first);
+}
+
+state=loadState();
+rebuildAll();
+</script>
+</body>
+</html>
